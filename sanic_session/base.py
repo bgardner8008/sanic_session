@@ -1,4 +1,5 @@
 import time
+import datetime
 import abc
 import ujson
 import uuid
@@ -19,7 +20,7 @@ _sessions_cache = {}
 
 def _calculate_expires(expiry):
     expires = time.time() + expiry
-    return time.strftime("%a, %d-%b-%Y %T GMT", time.gmtime(expires))
+    return datetime.datetime.fromtimestamp(expires)
 
 
 class BaseSessionInterface(metaclass=abc.ABCMeta):
@@ -29,7 +30,7 @@ class BaseSessionInterface(metaclass=abc.ABCMeta):
         response.cookies[self.cookie_name] = request['session'].sid
 
         # We set expires/max-age even for session cookies to force expiration
-        response.cookies[self.cookie_name]['expires'] = 0
+        response.cookies[self.cookie_name]['expires'] = datetime.datetime.now()
         response.cookies[self.cookie_name]['max-age'] = 0
 
     def _set_cookie_expiration(self, request, response):
